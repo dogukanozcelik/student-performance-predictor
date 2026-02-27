@@ -56,6 +56,58 @@ const mockStudents = [
     gpa: 3.5,
     enrollmentYear: 2022,
   },
+    {
+    id: 5,
+    studentNo: 'STU005',
+    firstName: 'Ali',
+    lastName: 'Yıldız',
+    g1: 88,
+    g2: 92,
+    email: 'ali.yildiz@university.edu',
+    phone: '+90 512 345 6793',
+    department: 'Computer Engineering',
+    gpa: 3.8,
+    enrollmentYear: 2022,
+  },
+  {
+    id: 6,
+    studentNo: 'STU006',
+    firstName: 'Elif',
+    lastName: 'Öztürk',
+    g1: 80,
+    g2: 85,
+    email: 'elif.ozturk@university.edu',
+    phone: '+90 512 345 6794',
+    department: 'Computer Engineering',
+    gpa: 3.7,
+    enrollmentYear: 2022,
+  },
+  {
+    id: 7,
+    studentNo: 'STU007',
+    firstName: 'Deniz',
+    lastName: 'Arslan',
+    g1: 82,
+    g2: 87,
+    email: 'deniz.arslan@university.edu',
+    phone: '+90 512 345 6795',
+    department: 'Computer Engineering',
+    gpa: 3.8,
+    enrollmentYear: 2022,
+  },
+  {
+    id: 8,
+    studentNo: 'STU008',
+    firstName: 'Seda',
+    lastName: 'Kara',
+    g1: 90,
+    g2: 95,
+    email: 'seda.kara@university.edu',
+    phone: '+90 512 345 6796',
+    department: 'Computer Engineering',
+    gpa: 3.9,
+    enrollmentYear: 2022,
+  }
 ]
 
 const StudentList = () => {
@@ -81,8 +133,8 @@ const StudentList = () => {
   return (
     <div className="w-full">
       <div className="mb-6">
-        <h2 className="text-3xl font-bold text-gray-800">Öğrenci Listesi</h2>
-        <p className="text-gray-600 mt-1">Tüm kayıtlı öğrenciler</p>
+        <h2 className="text-3xl font-bold text-gray-800">Student List</h2>
+        <p className="text-gray-600 mt-1">List of all registered students</p>
       </div>
 
       <StudentTable students={students} onDetailsClick={handleDetailsClick} onReportClick={handleReportClick} />
