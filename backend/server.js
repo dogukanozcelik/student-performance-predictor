@@ -3,6 +3,7 @@ import cors from 'cors'
 import 'dotenv/config'
 import modelRouter from './routes/modelController.js'
 
+
 const app = express();
 
 app.use(cors())
@@ -15,7 +16,7 @@ app.get('/', (req,res) => {
   res.send('Server is Live')
 })
 
-app.use('/api/model', modelRouter)
+app.use('/api/model', modelRouter);
 
 
 app.listen(PORT, () =>{
