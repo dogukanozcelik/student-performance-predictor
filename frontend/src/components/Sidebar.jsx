@@ -1,15 +1,16 @@
 import { Link } from 'react-router-dom'
+import logo from '../assets/logo.png'
 
 const navigationItems = [
-  { label: 'Home Page', to: '/' },
-  { label: 'Student List', to: '/students' },
+  { label: 'Home Page', to: '/dashboard' },
+  { label: 'Student List', to: '/dashboard/students' },
 
 ]
 
 const Sidebar = ({ sidebarOpen, closeSidebar }) => {
   return (
     <>
-      <aside className="hidden w-[250px] shrink-0 bg-[#2B3744] text-white md:block">
+      <aside className="hidden w-62.5 shrink-0 bg-[#2B3744] text-white md:block">
         <div className="sticky top-0 h-[calc(100vh-5rem)] overflow-y-auto px-3 py-2">
           <SidebarContent closeSidebar={closeSidebar} />
         </div>
@@ -24,7 +25,7 @@ const Sidebar = ({ sidebarOpen, closeSidebar }) => {
       />
 
       <aside
-        className={`fixed left-0 top-20 z-40 h-[calc(100vh-5rem)] w-[250px] bg-[#2B3744] px-3 py-4 text-white shadow-xl transition-transform duration-300 md:hidden ${
+        className={`fixed left-0 top-20 z-40 h-[calc(100vh-5rem)] w-62.5 bg-[#2B3744] px-3 py-4 text-white shadow-xl transition-transform duration-300 md:hidden ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -38,7 +39,7 @@ const SidebarContent = ({ closeSidebar }) => {
   return (
     <div className="flex h-full flex-col">
       <div className="mb-2 flex items-center border-b border-white/35 ">
-        <img src="src/assets/logo.png" alt="Logo" className='w-20'/>
+        <img src={logo} alt="Logo" className='w-20'/>
         <div className="leading-tight">
           <p className="text-xl font-semibold">Okasa Ozzeku</p>
           <p className="text-xl font-semibold">University</p>
