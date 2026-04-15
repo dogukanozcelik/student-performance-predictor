@@ -1,12 +1,40 @@
 import joblib
 import pandas as pd
+
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-app = FastAPI()
 
-model = joblib.load('models/model.pkl')
-feature_names = joblib.load('models/feature_names.pkl')
+app = FastAPI(
+    title="Student Performance Predictor Model Service",
+    version="1.0"
+)
+
+# Regression model
+g3_model = joblib.load(
+    "models/g3_pipeline.pkl"
+)
+
+# Classification model
+gb_classifier = joblib.load(
+    "models/gb_classifier.pkl"
+)
+
+# Label encoder
+label_encoder = joblib.load(
+    "models/label_encoder.pkl"
+)
+
+# Segmentation model
+segmentation_model = joblib.load(
+    "models/segmentation_model.pkl"
+)
+
+# Cluster names
+cluster_names = joblib.load(
+    "models/cluster_names.pkl"
+)
+
 
 class StudentInput(BaseModel):
     school: str
@@ -42,29 +70,88 @@ class StudentInput(BaseModel):
     G1: int
     G2: int
 
+
 @app.get("/health")
 def health():
-    return {"status": "ok"}
-
-
-@app.post("/predict")
-def predict(data: StudentInput):
-    input_df = pd.DataFrame([data.model_dump()])
-
-    input_df = pd.get_dummies(input_df)
-
-    input_df = input_df.reindex(columns=feature_names, fill_value=0)
-
-    prediction = model.predict(input_df)[0]
-
     return {
-        "predicted_G3": round(float(prediction), 2),
-        "risk_level": get_risk_level(prediction)
+        "status": "ok",
+        "models": [
+            "G3 Regression Pipeline",
+            "Performance Classification Pipeline",
+            "Student Segmentation Pipeline"
+        ]
     }
 
-def get_risk_level(score):
-    if score < 50:
-        return "High Risk"
-    elif score < 70:
-        return "Medium Risk"
-    return "Low Risk"
+
+@app.post("/predict-g3")
+def predict_g3(data: StudentInput):
+
+    input_df = pd.DataFrame([
+        data.model_dump()
+    ])
+
+    # -------------------------
+    # G3 REGRESSION PREDICTION
+    # -------------------------
+    predicted_g3 = g3_model.predict(input_df)[0]
+
+    predicted_g3 = max(
+        0,
+        min(20, float(predicted_g3))
+    ) * 5
+
+    # -------------------------
+    # CLASSIFICATION PREDICTION
+    # -------------------------
+    pred_class_encoded = gb_classifier.predict(
+        input_df
+    )[0]
+
+    pred_class = label_encoder.inverse_transform(
+        [pred_class_encoded]
+    )[0]
+
+    # Classification probabilities
+    probabilities = gb_classifier.predict_proba(
+        input_df
+    )[0]
+
+    class_probabilities = {
+        label: round(float(prob), 4)
+        for label, prob in zip(
+            label_encoder.classes_,
+            probabilities
+        )
+    }
+
+    confidence = round(
+        float(max(probabilities)),
+        4
+    )
+
+    # -------------------------
+    # SEGMENTATION PREDICTION
+    # -------------------------
+    segmentation_input = input_df.drop(
+        columns=["G1", "G2"],
+        errors="ignore"
+    )
+
+    segment_id = segmentation_model.predict(
+        segmentation_input
+    )[0]
+
+    segment_name = cluster_names[
+        int(segment_id)
+    ]
+
+    return {
+        "predicted_G3": round(predicted_g3, 2),
+        "success_level": pred_class,
+        "confidence": confidence,
+        "class_probabilities": class_probabilities,
+        "segment": {
+            "segment_id": int(segment_id),
+            "segment_name": segment_name
+        }
+    }
