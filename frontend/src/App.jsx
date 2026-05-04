@@ -1,6 +1,6 @@
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import { useState } from 'react'
-import Home from './pages/Home'
+
 import StudentList from './pages/StudentList'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
@@ -32,7 +32,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Login />} />
         <Route path='/dashboard' element={<DashboardLayout />}>
-          <Route index element={<Home />} />
+          <Route index element={<StudentList />} />
           <Route path='students' element={<StudentList />} />
         </Route>
         <Route path='*' element={<Navigate to='/' replace />} />

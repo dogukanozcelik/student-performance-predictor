@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import logo from '../assets/logo.png'
+import { normalizeInstructor, normalizeStudent,apiClient } from '../lib/api'
 
 function Login() {
   const navigate = useNavigate()
   const [errorMessage, setErrorMessage] = useState('')
-  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5001'
+
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -20,27 +21,20 @@ function Login() {
     }
 
     try {
-      const response = await fetch(`${apiBaseUrl}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
+      const response = await apiClient.post('/api/auth/login', {
+        username,
+        password,
       })
 
-      const payload = await response.json()
+      const instructor = normalizeInstructor(response.data.data.instructor || {})
+      const students = (response.data.data.students || []).map(normalizeStudent)
 
-      if (!response.ok) {
-        setErrorMessage(payload.message || 'Giriş başarısız oldu.')
-        return
-      }
-
-      localStorage.setItem('authInstructor', JSON.stringify(payload.data.instructor))
-      localStorage.setItem('assignedStudents', JSON.stringify(payload.data.students))
+      localStorage.setItem('authInstructor', JSON.stringify(instructor))
+      localStorage.setItem('assignedStudents', JSON.stringify(students))
       setErrorMessage('')
       navigate('/dashboard')
     } catch (error) {
-      setErrorMessage('Sunucuya bağlanılamadı. Backend çalışıyor mu kontrol edin.')
+      setErrorMessage(error?.response?.data?.message || 'Sunucuya bağlanılamadı. Backend çalışıyor mu kontrol edin.')
     }
   }
 

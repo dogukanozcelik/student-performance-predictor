@@ -2,9 +2,7 @@ import { Link } from 'react-router-dom'
 import logo from '../assets/logo.png'
 
 const navigationItems = [
-  { label: 'Home Page', to: '/dashboard' },
   { label: 'Student List', to: '/dashboard/students' },
-
 ]
 
 const Sidebar = ({ sidebarOpen, closeSidebar }) => {
@@ -52,7 +50,7 @@ const SidebarContent = ({ closeSidebar }) => {
             key={item.label}
             to={item.to}
             onClick={closeSidebar}
-            className="rounded-md px-4 py-2.5 text-2xl font-medium text-white/95 transition hover:bg-white/10 md:text-[30px]"
+            className="rounded-md text-start px-8 py-2.5 text-lg font-medium text-white/95 transition hover:bg-white/10 md:text-[25px]"
           >
             {item.label}
           </Link>
