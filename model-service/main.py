@@ -37,6 +37,9 @@ cluster_names = joblib.load(
 
 
 class StudentInput(BaseModel):
+    student_id: int
+    first_name: str
+    last_name: str
     school: str
     sex: str
     age: int
@@ -88,7 +91,7 @@ def predict_g3(data: StudentInput):
 
     input_df = pd.DataFrame([
         data.model_dump()
-    ])
+    ]).drop(columns=['student_id', 'first_name', 'last_name'])
 
     # -------------------------
     # G3 REGRESSION PREDICTION
