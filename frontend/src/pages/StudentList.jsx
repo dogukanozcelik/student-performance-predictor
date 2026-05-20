@@ -39,7 +39,7 @@ const StudentList = () => {
         setStudents(normalizedStudents)
         localStorage.setItem('assignedStudents', JSON.stringify(normalizedStudents))
       } catch (error) {
-        setErrorMessage(error?.response?.data?.message || 'Öğrenci verileri yüklenemedi.')
+        setErrorMessage(error?.response?.data?.message || 'Student data could not be loaded.')
       } finally {
         setLoading(false)
       }
@@ -76,7 +76,7 @@ const StudentList = () => {
       URL.revokeObjectURL(url)
     } catch (error) {
       console.error('Report generation failed', error)
-      setErrorMessage(error?.response?.data?.message || 'Rapor oluşturulamadı.')
+      setErrorMessage(error?.response?.data?.message || 'The report could not be generated.')
     } finally {
       setLoading(false)
     }

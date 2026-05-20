@@ -18,7 +18,7 @@ export const loginInstructor = async (req, res) => {
     if (!username || !password) {
       return res.status(400).json({
         success: false,
-        message: 'username ve password zorunludur.',
+        message: 'Username and password are required.',
       })
     }
 
@@ -40,7 +40,7 @@ export const loginInstructor = async (req, res) => {
     if (instructors.length === 0) {
       return res.status(401).json({
         success: false,
-        message: 'Geçersiz instructor bilgileri.',
+        message: 'Invalid instructor credentials.',
       })
     }
 
@@ -136,7 +136,7 @@ export const getInstructorProfile = async (req, res) => {
     if (instructors.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'Instructor bulunamadı.',
+        message: 'Instructor not found.',
       })
     }
 

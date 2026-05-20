@@ -16,7 +16,7 @@ function Login() {
     const password = String(formData.get('password') || '').trim()
 
     if (!username || !password) {
-      setErrorMessage('Username ve password alanları zorunludur.')
+      setErrorMessage('Username and password fields are required.')
       return
     }
 
@@ -34,7 +34,7 @@ function Login() {
       setErrorMessage('')
       navigate('/dashboard')
     } catch (error) {
-      setErrorMessage(error?.response?.data?.message || 'Sunucuya bağlanılamadı. Backend çalışıyor mu kontrol edin.')
+      setErrorMessage(error?.response?.data?.message || 'Could not connect to the server. Check whether the backend is running.')
     }
   }
 
