@@ -3,6 +3,9 @@ import sql from '../config/db.js'
 const MODEL_SERVICE_URL = process.env.MODEL_SERVICE_URL
 
 const toModelPayload = (student) => ({
+  student_id: student.student_id,
+  first_name: student.first_name,
+  last_name: student.last_name,
   school: student.school,
   sex: student.sex,
   age: Number(student.age ?? 0),
@@ -39,39 +42,7 @@ const toModelPayload = (student) => ({
 
 export const fetchModelPredictionForStudent = async (studentId) => {
   const rows = await sql`
-    SELECT
-      s.school,
-      s.sex,
-      s.age,
-      s.address,
-      s.famsize,
-      s.pstatus,
-      s.medu,
-      s.fedu,
-      s.mjob,
-      s.fjob,
-      s.reason,
-      s.guardian,
-      s.traveltime,
-      s.studytime,
-      s.failures,
-      s.schoolsup,
-      s.famsup,
-      s.paid,
-      s.activities,
-      s.nursery,
-      s.higher,
-      s.internet,
-      s.romantic,
-      s.famrel,
-      s.freetime,
-      s.goout,
-      s.dalc,
-      s.walc,
-      s.health,
-      s.absences,
-      s.g1,
-      s.g2
+    SELECT *
     FROM students s
     WHERE s.student_id = ${studentId}
     LIMIT 1

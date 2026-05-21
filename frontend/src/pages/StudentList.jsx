@@ -121,7 +121,7 @@ const StudentList = () => {
 
       {loading ? (
         <div className="rounded-lg border border-dashed border-slate-300 bg-white px-4 py-10 text-center text-slate-600">
-          Students are loading...
+          Report is generating...
         </div>
       ) : errorMessage ? (
         <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-4 text-sm text-red-700">

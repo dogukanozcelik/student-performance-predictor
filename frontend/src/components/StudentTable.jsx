@@ -23,12 +23,12 @@ const StudentTable = ({ students, onDetailsClick, onReportClick }) => {
                 <td className="px-4 md:px-6 py-4 text-sm text-gray-800">{student.lastName}</td>
                 <td className="px-4 md:px-6 py-4 text-sm text-gray-800">
                   <span className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold">
-                    {student.g1}
+                    {student.g1*5}
                   </span>
                 </td>
                 <td className="px-4 md:px-6 py-4 text-sm text-gray-800">
                   <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold">
-                    {student.g2}
+                    {student.g2*5}
                   </span>
                 </td>
                 <td className="px-4 md:px-6 py-4 text-sm text-gray-800">{student.absences}</td>

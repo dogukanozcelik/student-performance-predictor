@@ -91,7 +91,41 @@ export const generateReport = async (req, res) => {
 
     const rows = await sql`
       SELECT
-        s.*,
+            student_id,
+    first_name,
+    last_name,
+    school,
+    sex,
+    age,
+    address,
+    famsize,
+    Pstatus,
+    Medu,
+    Fedu,
+    Mjob,
+    Fjob,
+    reason,
+    guardian,
+    traveltime,
+    studytime,
+    failures,
+    schoolsup,
+    famsup,
+    paid,
+    activities,
+    nursery,
+    higher,
+    internet,
+    romantic,
+    famrel,
+    freetime,
+    goout,
+    Dalc,
+    Walc,
+    health,
+    absences,
+    G1*5,
+    G2*5,
         COALESCE(course_info.course_names, '') AS course_names,
         COALESCE(course_info.instructor_names, '') AS instructor_names
       FROM students s
@@ -125,11 +159,49 @@ export const generateReport = async (req, res) => {
     if (!genAI) {
       return res.status(500).json({
         success: false,
-        message: 'GEMINI_API_KEY tanımlı değil.',
+        message: 'GEMINI_API_KEY not defined.',
       })
     }
 
-    const prompt = `You are an academic advisor. Create a professional report for a student. Include: student full name, school, sex, age, family status, parental education, parents' jobs, reason for choosing school, guardian, travel time, study time, failures, support flags, family relation, free time, going out, weekday and weekend alcohol, health, absences, grades (g1, g2), model prediction summary, brief analysis, suggestions, and recommended next steps. Use formal tone. Do not use markdown, bullets, asterisks, or numbered lists. Write simple plain text with section titles ending in a colon. IMPORTANT: Never provide the predicted G3 as an exact numeric value. Always express it as a range sentence such as "They are expected to score between 40 and 50.".
+    const prompt = `You are an academic advisor working with an AI-based student performance prediction system.
+
+Generate a short, professional, and insight-focused student evaluation report.
+
+The report should interpret the student data instead of listing every variable individually.
+
+Keep the report concise and readable.
+Avoid long explanations and unnecessary detail.
+
+Use clear section titles so the reader can easily distinguish each part of the report.
+
+Required section titles:
+Overview:
+Academic Evaluation:
+Behavioral & Social Factors:
+Prediction Summary:
+Recommendations:
+Final Assessment:
+
+Instructions:
+•⁠  ⁠Do not use markdown, bullet points, or numbered lists.
+•⁠  ⁠Keep each section short and focused.
+•⁠  ⁠Use natural professional language.
+•⁠  ⁠Avoid robotic or repetitive phrasing.
+•⁠  ⁠Do not repeat raw input values unnecessarily.
+•⁠  ⁠Focus on interpreting the meaning of the data.
+•⁠  ⁠Mention both strengths and possible risks.
+•⁠  ⁠Treat the AI prediction as a supportive estimation, not an absolute fact.
+•⁠  ⁠Never provide predicted G3 as an exact number.
+•⁠  ⁠Always express predicted performance as a score range.
+
+Examples:
+"The student is expected to perform within the 70–75 range."
+"The prediction suggests a moderate academic outcome."
+
+When mentioning confidence or probabilities, explain them briefly in plain language instead of directly printing JSON values.
+
+The tone should resemble a real advisor report written for teachers or school administrators.
+
 
 Student data:
 ${JSON.stringify(student, null, 2)}
