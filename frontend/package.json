@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
+    "start": "serve -s dist -l tcp://0.0.0.0:$PORT",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -14,7 +15,8 @@
     "axios": "^1.16.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "react-router-dom": "^7.15.1"
+    "react-router-dom": "^7.15.1",
+    "serve": "^14.2.6"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
