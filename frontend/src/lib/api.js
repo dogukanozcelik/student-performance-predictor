@@ -7,6 +7,8 @@ export const apiClient = axios.create({
   },
 })
 
+export const logoutInstructor = () => apiClient.post('/api/auth/logout')
+
 export const normalizeStudent = (student) => ({
   id: student.id ?? student.student_id,
   firstName: student.first_name,
