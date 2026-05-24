@@ -1,4 +1,5 @@
 import sql from '../config/db.js'
+import bcrypt from 'bcryptjs'
 
 const mapInstructor = (row, studentCount = 0) => ({
   id: row.id,
@@ -26,6 +27,7 @@ export const loginInstructor = async (req, res) => {
       SELECT
         u.user_id,
         u.username,
+        u.password,
         i.instructor_id AS id,
         i.first_name,
         i.last_name,
@@ -33,7 +35,6 @@ export const loginInstructor = async (req, res) => {
       FROM users u
       INNER JOIN instructors i ON i.user_id = u.user_id
       WHERE u.username = ${username}
-        AND u.password = ${password}
       LIMIT 1
     `
 
@@ -45,6 +46,14 @@ export const loginInstructor = async (req, res) => {
     }
 
     const instructor = instructors[0]
+    const passwordIsValid = await bcrypt.compare(password, instructor.password || '')
+
+    if (!passwordIsValid) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid instructor credentials.',
+      })
+    }
 
     const studentCountResult = await sql`
       SELECT COUNT(DISTINCT s.student_id)::int AS student_count
