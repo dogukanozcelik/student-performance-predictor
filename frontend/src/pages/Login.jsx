@@ -74,30 +74,27 @@ function Login() {
               </div>
 
               <div className='max-w-md space-y-6'>
-                <span className='inline-flex items-center rounded-full border border-white/15 bg-white/10 px-4 py-1 text-sm text-white/80 backdrop-blur'>
-                  Secure academic access
-                </span>
                 <div className='space-y-3'>
                   <h2 className='text-4xl font-semibold leading-tight'>
-                    Manage student information in one place.
+                      Predict student performance with AI-powered insights
                   </h2>
                   <p className='max-w-sm text-base leading-7 text-white/70'>
-                    Sign in to review student records, monitor grades, and access the dashboard experience built for the project.
+                    Log in to analyze student data, generate performance predictions and access the intelligent dashboard designed for academic success evaluation.
                   </p>
                 </div>
 
                 <div className='grid grid-cols-3 gap-3 pt-4'>
                   <div className='rounded-2xl border border-white/10 bg-white/8 p-4 backdrop-blur'>
                     <p className='text-xs uppercase tracking-[0.25em] text-white/55'>Students</p>
-                    <p className='mt-2 text-2xl font-semibold'>240+</p>
+                    <p className='mt-2 text-2xl font-semibold'>100+</p>
+                  </div>
+                  <div className='rounded-2xl border border-white/10 bg-white/8 p-4 backdrop-blur'>
+                    <p className='text-xs uppercase tracking-[0.25em] text-white/55'>Courses</p>
+                    <p className='mt-2 text-2xl font-semibold'>50+</p>
                   </div>
                   <div className='rounded-2xl border border-white/10 bg-white/8 p-4 backdrop-blur'>
                     <p className='text-xs uppercase tracking-[0.25em] text-white/55'>Reports</p>
-                    <p className='mt-2 text-2xl font-semibold'>48</p>
-                  </div>
-                  <div className='rounded-2xl border border-white/10 bg-white/8 p-4 backdrop-blur'>
-                    <p className='text-xs uppercase tracking-[0.25em] text-white/55'>Faculty</p>
-                    <p className='mt-2 text-2xl font-semibold'>12</p>
+                    <p className='mt-2 text-2xl font-semibold'>40+</p>
                   </div>
                 </div>
               </div>
