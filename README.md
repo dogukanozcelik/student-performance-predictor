@@ -1,4 +1,4 @@
-# GP
+# Student Performance Predictor
 
 Student performance analytics and prediction platform with three parts:
 
