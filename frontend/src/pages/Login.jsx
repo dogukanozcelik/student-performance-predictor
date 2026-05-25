@@ -76,7 +76,7 @@ function Login() {
               <div className='max-w-md space-y-6'>
                 <div className='space-y-3'>
                   <h2 className='text-4xl font-semibold leading-tight'>
-                      Predict student performance with AI-powered insights
+                      Predict student performance with <br/>AI-powered insights
                   </h2>
                   <p className='max-w-sm text-base leading-7 text-white/70'>
                     Log in to analyze student data, generate performance predictions and access the intelligent dashboard designed for academic success evaluation.
