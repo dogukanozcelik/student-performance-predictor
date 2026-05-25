@@ -38,7 +38,7 @@ const Sidebar = ({ sidebarOpen, closeSidebar }) => {
       />
 
       <aside
-        className={`fixed left-0 top-20 z-40 h-[calc(100vh-5rem)] w-62.5 bg-[#2B3744] px-3 py-4 text-white shadow-xl transition-transform duration-300 md:hidden ${
+        className={`fixed left-0 top-0 z-40 h-[calc(100vh-5rem)] w-62.5 bg-[#2B3744] px-3 py-4 text-white shadow-xl transition-transform duration-300 md:hidden ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
