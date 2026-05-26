@@ -74,13 +74,13 @@ const StudentTable = ({ students, onDetailsClick, onReportClick }) => {
               <div>
                 <p className="text-xs text-gray-500 mb-1">G1 Grade</p>
                 <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">
-                  {student.g1}
+                  {student.g1*5}
                 </span>
               </div>
               <div>
                 <p className="text-xs text-gray-500 mb-1">G2 Grade</p>
                 <span className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold">
-                  {student.g2}
+                  {student.g2*5}
                 </span>
               </div>
               <div>

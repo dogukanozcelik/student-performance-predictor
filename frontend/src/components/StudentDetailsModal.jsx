@@ -88,8 +88,8 @@ const StudentDetailsModal = ({ student, onClose }) => {
                 </div>
 
                 <div className="mt-4 grid gap-3 grid-cols-2 xl:grid-cols-4">
-                  <StatCard label="G1" value={student.g1} />
-                  <StatCard label="G2" value={student.g2} />
+                  <StatCard label="G1" value={student.g1 * 5} />
+                  <StatCard label="G2" value={student.g2 * 5} />
                   <StatCard label="Absences" value={student.absences} />
                   <StatCard label="Failures" value={student.failures} />
                 </div>
