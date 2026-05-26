@@ -1,4 +1,4 @@
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { logoutInstructor } from '../lib/api'
 import logo from '../assets/logo.png'
 
@@ -9,6 +9,13 @@ const navigationItems = [
 
 const Sidebar = ({ sidebarOpen, closeSidebar }) => {
   const navigate = useNavigate()
+
+  const handleStudentListClick = () => {
+    closeSidebar()
+    navigate('/dashboard/students', {
+      state: { refreshKey: Date.now() },
+    })
+  }
 
   const handleLogout = async () => {
     try {
@@ -25,7 +32,7 @@ const Sidebar = ({ sidebarOpen, closeSidebar }) => {
     <>
       <aside className="hidden w-62.5 shrink-0 bg-[#2B3744] text-white md:block">
         <div className="sticky top-0 h-[calc(100vh-5rem)] overflow-y-auto px-3 py-2">
-          <SidebarContent closeSidebar={closeSidebar} onLogout={handleLogout} />
+          <SidebarContent onStudentListClick={handleStudentListClick} onLogout={handleLogout} />
         </div>
       </aside>
 
@@ -42,13 +49,13 @@ const Sidebar = ({ sidebarOpen, closeSidebar }) => {
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <SidebarContent closeSidebar={closeSidebar} onLogout={handleLogout} />
+        <SidebarContent onStudentListClick={handleStudentListClick} onLogout={handleLogout} />
       </aside>
     </>
   )
 }
 
-const SidebarContent = ({ closeSidebar, onLogout }) => {
+const SidebarContent = ({ onStudentListClick, onLogout }) => {
   return (
     <div className="flex h-full flex-col">
       <div className="mb-2 flex items-center border-b border-white/35 ">
@@ -71,15 +78,14 @@ const SidebarContent = ({ closeSidebar, onLogout }) => {
               {item.label}
             </button>
           ) : (
-            <Link
+            <button
               key={item.label}
-              to={item.to}
-              state={{ resetStudentList: Date.now() }}
-              onClick={closeSidebar}
-              className="rounded-md px-8 py-2.5 text-start text-lg font-medium text-white/95 transition hover:bg-white/10 md:text-[25px]"
+              type="button"
+              onClick={onStudentListClick}
+              className="rounded-md px-8 py-2.5 text-left text-lg font-medium text-white/95 transition hover:bg-white/10 md:text-[25px]"
             >
               {item.label}
-            </Link>
+            </button>
           )
         ))}
       </nav>

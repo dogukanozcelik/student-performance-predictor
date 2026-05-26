@@ -1,19 +1,16 @@
 
 import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
 import StudentDetailsModal from '../components/StudentDetailsModal'
 import StudentTable from '../components/StudentTable'
 import { apiClient, normalizeStudent } from '../lib/api'
 
 const StudentList = () => {
-  const location = useLocation()
   const [students, setStudents] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedStudent, setSelectedStudent] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [loading, setLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
-  const visibleErrorMessage = location.state?.resetStudentList ? '' : errorMessage
 
   useEffect(() => {
     const loadStudents = async () => {
@@ -58,7 +55,6 @@ const StudentList = () => {
 
   const handleReportClick = async (student) => {
     try {
-      setErrorMessage('')
       setLoading(true)
       // Request PDF from backend; expect binary blob
       const response = await apiClient.post(
@@ -108,9 +104,9 @@ const StudentList = () => {
         <h2 className="text-3xl font-bold text-gray-800">Student List</h2>
       </div>
 
-      {!loading ? (
-        <div className="mb-3 flex justify-end">
-          <div className="w-full max-w-md rounded-lg">
+      {!loading && !errorMessage ? (
+          <div className="mb-3 flex justify-end">
+            <div className="w-full max-w-md rounded-lg">
           <input
             id="student-search"
             type="search"
@@ -119,19 +115,17 @@ const StudentList = () => {
             placeholder="Example: 1, Ahmet, Yılmaz, GP"
             className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-900 focus:bg-white"
           />
-          </div>
-        </div>
-      ) : null}
-
-      {!loading && visibleErrorMessage ? (
-        <div className="mb-3 rounded-lg border border-red-200 bg-red-50 px-4 py-4 text-sm text-red-700">
-          {visibleErrorMessage}
+            </div>
         </div>
       ) : null}
 
       {loading ? (
         <div className="rounded-lg border border-dashed border-slate-300 bg-white px-4 py-10 text-center text-slate-600">
           Report is generating...
+        </div>
+      ) : errorMessage ? (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-4 text-sm text-red-700">
+          {errorMessage}
         </div>
       ) : filteredStudents.length === 0 ? (
         <div className="rounded-lg border border-dashed border-slate-300 bg-white px-4 py-10 text-center text-slate-600">

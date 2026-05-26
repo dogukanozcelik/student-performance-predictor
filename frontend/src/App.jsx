@@ -1,10 +1,16 @@
-import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { useState } from 'react'
 
 import StudentList from './pages/StudentList'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
 import Login from './pages/Login'
+
+function StudentListRoute() {
+  const location = useLocation()
+
+  return <StudentList key={location.key} />
+}
 
 function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -32,8 +38,8 @@ function App() {
       <Routes>
         <Route path='/' element={<Login />} />
         <Route path='/dashboard' element={<DashboardLayout />}>
-          <Route index element={<StudentList />} />
-          <Route path='students' element={<StudentList />} />
+          <Route index element={<StudentListRoute />} />
+          <Route path='students' element={<StudentListRoute />} />
         </Route>
         <Route path='*' element={<Navigate to='/' replace />} />
       </Routes>

@@ -94,13 +94,13 @@ const StudentTable = ({ students, onDetailsClick, onReportClick }) => {
                 onClick={() => onDetailsClick(student)}
                 className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-md transition font-medium text-xs"
               >
-                Detaylar
+                Details
               </button>
               <button
                 onClick={() => onReportClick(student)}
                 className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-2 rounded-md transition font-medium text-xs"
               >
-                Rapor Oluştur
+                Generate Report
               </button>
             </div>
           </div>
