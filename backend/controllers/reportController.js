@@ -209,30 +209,10 @@ ${JSON.stringify(student, null, 2)}
 Model prediction data:
 ${JSON.stringify(modelPredictionForPrompt, null, 2)}`
 
-    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-
-    const generateContentWithRetry = async ({ model, contents }, retries = 3) => {
-      for (let attempt = 0; attempt < retries; attempt++) {
-        try {
-          return await genAI.models.generateContent({ model, contents })
-        } catch (error) {
-          const status = error.status || error?.error?.code
-
-          const retryableStatuses = [429, 500, 502, 503, 504]
-
-          if (!retryableStatuses.includes(status) || attempt === retries - 1) {
-            throw error
-          }
-
-          await sleep(1000 * Math.pow(2, attempt))
-        }
-      }
-    }
-
-    const result = await generateContentWithRetry({
-    model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
-    contents: prompt,
-  })
+    const result = await genAI.models.generateContent({
+      model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+      contents: prompt,
+    })
     const reportText = result.text || 'No report generated.'
 
     const doc = new PDFDocument({ size: 'A4', margin: 50 })
