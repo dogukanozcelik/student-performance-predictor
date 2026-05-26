@@ -74,6 +74,7 @@ const SidebarContent = ({ closeSidebar, onLogout }) => {
             <Link
               key={item.label}
               to={item.to}
+              state={{ resetStudentList: Date.now() }}
               onClick={closeSidebar}
               className="rounded-md px-8 py-2.5 text-start text-lg font-medium text-white/95 transition hover:bg-white/10 md:text-[25px]"
             >
