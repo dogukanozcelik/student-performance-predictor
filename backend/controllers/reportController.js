@@ -230,9 +230,22 @@ ${JSON.stringify(modelPredictionForPrompt, null, 2)}`
 
     doc.end()
   } catch (error) {
-    console.error('Generate report error', error)
-    return res.status(500).json({ success: false, message: error.message })
+  console.error('Generate report error', error)
+
+  const status = error.status || error?.error?.code
+
+  if ([429, 503, 504].includes(status)) {
+    return res.status(503).json({
+      success: false,
+      message: 'AI service is not available.',
+    })
   }
+
+  return res.status(500).json({
+    success: false,
+    message: 'Report generation failed.',
+  })
+}
 }
 
 export default { generateReport }
