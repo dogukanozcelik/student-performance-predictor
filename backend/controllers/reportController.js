@@ -14,6 +14,14 @@ const wrapLines = (text = '') =>
     .map((line) => line.trim())
     .filter(Boolean)
 
+const toImageBuffer = (base64Value) => {
+  if (!base64Value || typeof base64Value !== 'string') {
+    return null
+  }
+
+  return Buffer.from(base64Value, 'base64')
+}
+
 const toScoreRange = (value, step = 10, maxScore = 100) => {
   const numericValue = Number(value)
   if (!Number.isFinite(numericValue)) {
@@ -79,10 +87,84 @@ const renderReportToPdf = (doc, student, reportText) => {
 
     doc.font('Helvetica').fontSize(11).text(cleanedLine, { align: 'left' })
   })
+}
+
+const renderVisualsPage = (doc, visuals) => {
+  const pageWidth =
+    doc.page.width - doc.page.margins.left - doc.page.margins.right
+
+  const left = doc.page.margins.left
+  const bottom = doc.page.height - doc.page.margins.bottom
+
+  const shapImage = toImageBuffer(visuals?.shap_png_base64)
+  const segmentImage = toImageBuffer(visuals?.segment_png_base64)
+
+  if (!shapImage && !segmentImage) {
+    doc.fontSize(11).text('No visual insights were available for this report.', { align: 'left' })
+    doc.moveDown(0.75)
+    doc.moveTo(left, doc.y).lineTo(left + pageWidth, doc.y).strokeColor('#9ca3af').stroke()
+    doc.moveDown(0.4)
+    doc.font('Helvetica-Oblique').fontSize(9).fillColor('#4b5563').text(
+      'AI Disclaimer: This report was generated with the help of an AI system. It is intended for decision support only and should be reviewed by a qualified educator or administrator before any action is taken.',
+      {
+        align: 'left',
+      }
+    )
+    doc.fillColor('black')
+    return
+  }
+
+  const imageHeight = 230
+  const titleHeight = 20
+  const gap = 30
+
+  const ensureSpace = (neededHeight) => {
+    if (doc.y + neededHeight > bottom) {
+      doc.addPage()
+    }
+  }
 
   doc.moveDown(1)
-  doc.moveTo(doc.x, doc.y).lineTo(545, doc.y).strokeColor('#9ca3af').stroke()
-  doc.moveDown(0.5)
+
+  ensureSpace(60)
+  doc.font('Helvetica-Bold').fontSize(18).text('Visual Insights', {
+    align: 'center',
+  })
+
+  doc.moveDown(0.75)
+
+  if (shapImage) {
+    ensureSpace(titleHeight + imageHeight + gap)
+
+    doc.font('Helvetica-Bold').fontSize(12).text('SHAP Feature Impact', left, doc.y)
+
+    const imageY = doc.y + 8
+
+    doc.image(shapImage, left, imageY, {
+      fit: [pageWidth, imageHeight],
+      align: 'center',
+    })
+
+    doc.y = imageY + imageHeight + gap
+  }
+
+  if (segmentImage) {
+    ensureSpace(titleHeight + imageHeight + gap)
+
+    doc.font('Helvetica-Bold').fontSize(12).text('Student Segmentation', left, doc.y)
+
+    const imageY = doc.y + 8
+
+    doc.image(segmentImage, left, imageY, {
+      fit: [pageWidth, imageHeight],
+      align: 'center',
+    })
+
+    doc.y = imageY + imageHeight + gap
+  }
+
+  doc.moveTo(left, doc.y).lineTo(left + pageWidth, doc.y).strokeColor('#9ca3af').stroke()
+  doc.moveDown(0.4)
   doc.font('Helvetica-Oblique').fontSize(9).fillColor('#4b5563').text(
     'AI Disclaimer: This report was generated with the help of an AI system. It is intended for decision support only and should be reviewed by a qualified educator or administrator before any action is taken.',
     {
@@ -161,11 +243,11 @@ export const generateReport = async (req, res) => {
 
     const { prediction: modelPrediction } = await fetchModelPredictionForStudent(studentId)
     const predictedG3Range = toScoreRange(modelPrediction?.predicted_G3)
+    const { visuals, predicted_G3, ...promptPredictionData } = modelPrediction
     const modelPredictionForPrompt = {
-      ...modelPrediction,
+      ...promptPredictionData,
       predicted_G3_range: predictedG3Range,
     }
-    delete modelPredictionForPrompt.predicted_G3
 
     if (!genAI) {
       return res.status(500).json({
@@ -244,6 +326,7 @@ ${JSON.stringify(modelPredictionForPrompt, null, 2)}`
     })
 
     renderReportToPdf(doc, student, reportText)
+  renderVisualsPage(doc, visuals)
 
     doc.end()
   } catch (error) {
