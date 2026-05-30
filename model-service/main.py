@@ -1,7 +1,6 @@
 from pathlib import Path
 from io import BytesIO
 import base64
-import logging
 
 import joblib
 import matplotlib
@@ -10,10 +9,6 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 import shap
-
-logging.basicConfig()
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 from fastapi import FastAPI
 from pydantic import BaseModel
@@ -73,19 +68,6 @@ try:
 except FileNotFoundError:
     explanation_dataset = pd.DataFrame(columns=FEATURE_COLUMNS + ["G3"])
 
-# Try load a small pre-saved background sample (recommended for deploy).
-background_sample = None
-try:
-    background_path = MODEL_DIR / "background_sample.pkl"
-    if background_path.exists():
-        background_sample = joblib.load(background_path)
-        if isinstance(background_sample, pd.DataFrame) and not background_sample.empty:
-            logger.info("Loaded background_sample from %s", background_path)
-        else:
-            background_sample = None
-except Exception as e:
-    logger.info("No background_sample available (%s)", e)
-
 
 def load_model(filename):
     return joblib.load(MODEL_DIR / filename)
@@ -125,12 +107,8 @@ def _pretty_feature_label(feature_name: str) -> str:
 def build_shap_visual(model_pipeline, student_frame: pd.DataFrame, background_frame: pd.DataFrame):
     try:
         if background_frame.empty:
-            # try a pre-saved background sample from models/
-            if background_sample is not None:
-                background_frame = background_sample
-            else:
-                logger.info("No background data available for SHAP; skipping visuals.")
-                return None
+            print("SHAP VISUAL ERROR: background_frame is empty")
+            return None
 
         preprocessor = model_pipeline.named_steps["preprocessor"]
         model = model_pipeline.named_steps["model"]
@@ -143,6 +121,7 @@ def build_shap_visual(model_pipeline, student_frame: pd.DataFrame, background_fr
             n=min(len(background_frame), 100),
             random_state=42,
         )
+
         background_processed = preprocessor.transform(background_sample)
         student_processed = preprocessor.transform(student_frame)
 
@@ -161,21 +140,19 @@ def build_shap_visual(model_pipeline, student_frame: pd.DataFrame, background_fr
         fig = plt.figure(figsize=(11, 6))
         shap.plots.waterfall(shap_values[0], max_display=10, show=False)
         fig = plt.gcf()
+
         return _encode_figure(fig)
-    except Exception:
-        logger.exception("build_shap_visual failed")
+
+    except Exception as e:
+        print("SHAP VISUAL ERROR:", repr(e))
         return None
 
 
 def build_segmentation_visual(segmentation_pipeline, student_frame: pd.DataFrame, background_frame: pd.DataFrame):
     try:
         if background_frame.empty:
-            # try a pre-saved background sample from models/
-            if background_sample is not None:
-                background_frame = background_sample[SEGMENTATION_FEATURE_COLUMNS]
-            else:
-                logger.info("No background data available for segmentation visual; skipping visuals.")
-                return None
+            print("SEGMENTATION VISUAL ERROR: background_frame is empty")
+            return None
 
         preprocessor = segmentation_pipeline.named_steps["preprocessor"]
         pca = segmentation_pipeline.named_steps["pca"]
@@ -191,6 +168,7 @@ def build_segmentation_visual(segmentation_pipeline, student_frame: pd.DataFrame
         student_cluster_label = _cluster_label(student_cluster)
 
         fig, ax = plt.subplots(figsize=(11, 6))
+
         unique_clusters = sorted(set(int(cluster_id) for cluster_id in background_clusters))
         cmap = plt.get_cmap("viridis", max(len(unique_clusters), 1))
 
@@ -214,14 +192,16 @@ def build_segmentation_visual(segmentation_pipeline, student_frame: pd.DataFrame
             linewidths=1.5,
             label=f"Selected Student ({student_cluster_label})",
         )
+
         ax.set_xlabel("PCA Component 1")
         ax.set_ylabel("PCA Component 2")
         ax.set_title("Student Segmentation Overview")
         ax.legend(loc="best", title="Clusters")
 
         return _encode_figure(fig)
-    except Exception:
-        logger.exception("build_segmentation_visual failed")
+
+    except Exception as e:
+        print("SEGMENTATION VISUAL ERROR:", repr(e))
         return None
 
 
@@ -343,6 +323,10 @@ class StudentInput(BaseModel):
 def health():
     return {
         "status": "ok",
+        "dataset_exists": DATASET_PATH.exists(),
+        "dataset_path": str(DATASET_PATH),
+        "dataset_rows": len(explanation_dataset),
+        "dataset_columns": explanation_dataset.columns.tolist(),
         "models": [
             "G3 Regression Pipeline",
             "Performance Classification Pipeline",
