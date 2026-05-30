@@ -21,7 +21,7 @@ app = FastAPI(
 
 BASE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BASE_DIR.parent
-DATASET_PATH = PROJECT_ROOT / "Data" / "student_information.csv"
+DATASET_PATH = BASE_DIR / "Data" / "student_information.csv"
 MODEL_DIR = BASE_DIR / "models"
 
 FEATURE_COLUMNS = [
