@@ -1,0 +1,42 @@
+import pytest
+
+
+@pytest.fixture
+def student_payload():
+    return {
+        "student_id": 1,
+        "first_name": "Ada",
+        "last_name": "Lovelace",
+        "school": "GP",
+        "sex": "F",
+        "age": 17,
+        "address": "Urban",
+        "famsize": "GT3",
+        "Pstatus": "T",
+        "Medu": 4,
+        "Fedu": 4,
+        "Mjob": "teacher",
+        "Fjob": "engineer",
+        "reason": "course",
+        "guardian": "mother",
+        "traveltime": 1,
+        "studytime": 3,
+        "failures": 0,
+        "schoolsup": "no",
+        "famsup": "yes",
+        "paid": "no",
+        "activities": "yes",
+        "nursery": "yes",
+        "higher": "yes",
+        "internet": "yes",
+        "romantic": "no",
+        "famrel": 4,
+        "freetime": 3,
+        "goout": 2,
+        "Dalc": 1,
+        "Walc": 1,
+        "health": 5,
+        "absences": 2,
+        "G1": 14,
+        "G2": 15,
+    }
