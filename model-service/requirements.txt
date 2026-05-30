@@ -3,3 +3,8 @@ uvicorn
 pandas
 scikit-learn
 joblib
+shap
+lime
+matplotlib
+pytest
+httpx
