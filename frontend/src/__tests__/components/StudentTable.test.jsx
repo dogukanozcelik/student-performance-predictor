@@ -2,7 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 
-import StudentTable from '../components/StudentTable'
+import StudentTable from '../../components/StudentTable'
 
 const students = [
   {
