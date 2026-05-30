@@ -79,6 +79,17 @@ const renderReportToPdf = (doc, student, reportText) => {
 
     doc.font('Helvetica').fontSize(11).text(cleanedLine, { align: 'left' })
   })
+
+  doc.moveDown(1)
+  doc.moveTo(doc.x, doc.y).lineTo(545, doc.y).strokeColor('#9ca3af').stroke()
+  doc.moveDown(0.5)
+  doc.font('Helvetica-Oblique').fontSize(9).fillColor('#4b5563').text(
+    'AI Disclaimer: This report was generated with the help of an AI system. It is intended for decision support only and should be reviewed by a qualified educator or administrator before any action is taken.',
+    {
+      align: 'left',
+    }
+  )
+  doc.fillColor('black')
 }
 
 export const generateReport = async (req, res) => {
@@ -199,6 +210,12 @@ Examples:
 "The prediction suggests a moderate academic outcome."
 
 When mentioning confidence or probabilities, explain them briefly in plain language instead of directly printing JSON values.
+
+The model prediction data may also include class and segment population summaries.
+Use those summaries to add context such as whether the student appears above or below the typical outcome for that class or segment.
+If a population profile is available, mention it naturally in the Prediction Summary or Final Assessment.
+Do not mention raw JSON field names.
+Prefer human language such as "students in this class typically score around..." or "this segment tends to fall near...".
 
 The tone should resemble a real advisor report written for teachers or school administrators.
 

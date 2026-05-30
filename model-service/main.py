@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import joblib
 import pandas as pd
 
@@ -10,30 +12,134 @@ app = FastAPI(
     version="1.0"
 )
 
+BASE_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = BASE_DIR.parent
+DATASET_PATH = PROJECT_ROOT / "Data" / "student_information.csv"
+MODEL_DIR = BASE_DIR / "models"
+
+FEATURE_COLUMNS = [
+    "school",
+    "sex",
+    "age",
+    "address",
+    "famsize",
+    "Pstatus",
+    "Medu",
+    "Fedu",
+    "Mjob",
+    "Fjob",
+    "reason",
+    "guardian",
+    "traveltime",
+    "studytime",
+    "failures",
+    "schoolsup",
+    "famsup",
+    "paid",
+    "activities",
+    "nursery",
+    "higher",
+    "internet",
+    "romantic",
+    "famrel",
+    "freetime",
+    "goout",
+    "Dalc",
+    "Walc",
+    "health",
+    "absences",
+    "G1",
+    "G2",
+]
+
+SEGMENTATION_FEATURE_COLUMNS = [
+    column for column in FEATURE_COLUMNS if column not in {"G1", "G2"}
+]
+
+try:
+    explanation_dataset = pd.read_csv(DATASET_PATH)
+except FileNotFoundError:
+    explanation_dataset = pd.DataFrame(columns=FEATURE_COLUMNS + ["G3"])
+
+
+def load_model(filename):
+    return joblib.load(MODEL_DIR / filename)
+
+
 # Regression model
-g3_model = joblib.load(
-    "models/g3_pipeline.pkl"
-)
+g3_model = load_model("g3_pipeline.pkl")
 
 # Classification model
-gb_classifier = joblib.load(
-    "models/gb_classifier.pkl"
-)
+gb_classifier = load_model("gb_classifier.pkl")
 
 # Label encoder
-label_encoder = joblib.load(
-    "models/label_encoder.pkl"
-)
+label_encoder = load_model("label_encoder.pkl")
 
 # Segmentation model
-segmentation_model = joblib.load(
-    "models/segmentation_model.pkl"
-)
+segmentation_model = load_model("segmentation_model.pkl")
 
 # Cluster names
-cluster_names = joblib.load(
-    "models/cluster_names.pkl"
-)
+cluster_names = load_model("cluster_names.pkl")
+
+
+def _safe_scaled_average(series: pd.Series) -> dict:
+    if series.empty:
+        return {
+            "average_G3_raw": None,
+            "average_G3_score": None,
+            "student_count": 0,
+        }
+
+    average_raw = float(series.mean())
+    return {
+        "average_G3_raw": round(average_raw, 2),
+        "average_G3_score": int(round(average_raw * 5)),
+        "student_count": int(series.shape[0]),
+    }
+
+
+def build_population_summaries():
+    if explanation_dataset.empty or "G3" not in explanation_dataset.columns:
+        return {}, {}
+
+    dataset_frame = explanation_dataset.copy()
+    available_feature_columns = [
+        column for column in FEATURE_COLUMNS if column in dataset_frame.columns
+    ]
+
+    if len(available_feature_columns) != len(FEATURE_COLUMNS):
+        return {}, {}
+
+    feature_frame = dataset_frame[FEATURE_COLUMNS].copy()
+    class_predictions = label_encoder.inverse_transform(
+        gb_classifier.predict(feature_frame)
+    )
+
+    class_frame = dataset_frame.copy()
+    class_frame["_predicted_class"] = class_predictions
+    class_profiles = {
+        label: _safe_scaled_average(group["G3"])
+        for label, group in class_frame.groupby("_predicted_class")
+    }
+
+    segmentation_input = dataset_frame[SEGMENTATION_FEATURE_COLUMNS].copy()
+    segment_ids = segmentation_model.predict(segmentation_input)
+
+    segment_frame = dataset_frame.copy()
+    segment_frame["_segment_id"] = segment_ids
+
+    segment_profiles = {}
+    for segment_id, group in segment_frame.groupby("_segment_id"):
+        segment_name = cluster_names[int(segment_id)]
+        segment_profiles[segment_name] = {
+            **_safe_scaled_average(group["G3"]),
+            "segment_id": int(segment_id),
+        }
+
+    return class_profiles, segment_profiles
+
+
+CLASS_PROFILES, SEGMENT_PROFILES = build_population_summaries()
 
 
 class StudentInput(BaseModel):
@@ -148,13 +254,32 @@ def predict_g3(data: StudentInput):
         int(segment_id)
     ]
 
+    success_level_info = {
+        "label": pred_class,
+        "confidence": confidence,
+        "probabilities": class_probabilities,
+        "population_profile": CLASS_PROFILES.get(pred_class, {
+            "average_G3_raw": None,
+            "average_G3_score": None,
+            "student_count": 0,
+        }),
+    }
+
+    segment_info = {
+        "segment_id": int(segment_id),
+        "segment_name": segment_name,
+        "population_profile": SEGMENT_PROFILES.get(segment_name, {
+            "average_G3_raw": None,
+            "average_G3_score": None,
+            "student_count": 0,
+        }),
+    }
+
     return {
         "predicted_G3": round(predicted_g3, 2),
         "success_level": pred_class,
+        "success_level_info": success_level_info,
         "confidence": confidence,
         "class_probabilities": class_probabilities,
-        "segment": {
-            "segment_id": int(segment_id),
-            "segment_name": segment_name
-        }
+        "segment": segment_info,
     }
